@@ -2,13 +2,13 @@ import pandas as pd
 
 dados = pd.read_excel("vendas.xlsx")
 
-dados["valor_total"] = dados["preco_unitario"]*dados["quantidade"]
+dados["valor_venda"] = dados["preco_unitario"]*dados["quantidade"]
 
-total = dados["valor_total"].sum()
-media = dados["valor_total"].mean()
-mediana = dados["valor_total"].median()
-minimo = dados["valor_total"].min()
-maximo = dados["valor_total"].max()
+total = dados["valor_venda"].sum()
+media = dados["valor_venda"].mean()
+mediana = dados["valor_venda"].median()
+minimo = dados["valor_venda"].min()
+maximo = dados["valor_venda"].max()
 
 print(f"""
     Receita total das vendas: R$ {total}
@@ -17,12 +17,12 @@ print(f"""
     Maior venda: R$ {maximo}
 """)
 
-abaixo_1000 = (dados["valor_total"] < 1000).sum()
-abaixo_1000_per = (dados[dados["valor_total"] < 1000].shape[0] / dados.shape[0])*100
+abaixo_1000 = (dados["valor_venda"] < 1000).sum()
+abaixo_1000_per = (dados[dados["valor_venda"] < 1000].shape[0] / dados.shape[0])*100
 
-dados.loc[(dados["valor_total"] < 1000), "categoria"] = "abaixo"
-dados.loc[(dados["valor_total"] >= 1000) & (dados["valor_total"] < 10000), "categoria"] = "intermed"
-dados.loc[(dados["valor_total"] >= 10000), "categoria"] = "acima"
+dados.loc[(dados["valor_venda"] < 1000), "categoria"] = "abaixo"
+dados.loc[(dados["valor_venda"] >= 1000) & (dados["valor_venda"] < 10000), "categoria"] = "intermed"
+dados.loc[(dados["valor_venda"] >= 10000), "categoria"] = "acima"
 
 print(f"{abaixo_1000} vendas foram abaixo de R$ 1.000,00 e isso representa {abaixo_1000_per}% das vendas")
 
@@ -36,3 +36,11 @@ print(f"{acima.shape[0]} vendas foram acima de R$ 10.000,00 e isso representa {a
 print(f"Vendas entre R$ 1.000,00 e 10.000,00 representam {intermed_per:.1f}% das vendas")
 
 # print(dados.sample(20))
+
+dados.loc[(dados["valor_venda"] >= 5000), "imposto"] = 15
+dados.loc[(dados["valor_venda"] < 5000), "imposto"] = 10
+
+dados["valor_liquido"] = (((100-dados["imposto"])*dados["valor_venda"])/100).round(2)
+
+print(dados[["valor_venda", "imposto", "valor_liquido"]])
+
