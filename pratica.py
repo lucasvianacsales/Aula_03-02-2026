@@ -42,13 +42,13 @@ dados.loc[(dados["valor_venda"] < 5000), "imposto"] = 10
 
 dados["valor_liquido"] = (((100-dados["imposto"])*dados["valor_venda"])/100).round(2)
 
-print(dados[["valor_venda", "imposto", "valor_liquido"]])
+# print(dados[["valor_venda", "imposto", "valor_liquido"]])
 
 dados.loc[(dados["idade"] < 30), "faixa_etaria"] = "Jovem"
 dados.loc[(dados["idade"] >= 30) & (dados["idade"] < 50), "faixa_etaria"] = "Adulto"
 dados.loc[(dados["idade"] >= 50), "faixa_etaria"] = "Sênior"
 
-print(dados[["idade", "faixa_etaria"]].sample(20))
+# print(dados[["idade", "faixa_etaria"]].sample(20))
 
 total_vendas_bruto = dados["valor_venda"].sum()
 total_vendas_liquido = dados["valor_liquido"].sum()
@@ -65,6 +65,24 @@ mediana = dados["valor_venda"].median()
 minimo = dados["valor_venda"].min()
 maximo = dados["valor_venda"].max()
 
+faturamento_vendedor = dados.groupby("vendedor").agg(
+    valor_venda = ("valor_venda", "sum"),
+    valor_liquido = ("valor_liquido", "sum"),
+    quantidade_vendas = ("valor_venda", "size")
+)
+
+faturamento_categoria = dados.groupby("categoria").agg(
+    valor_venda = ("valor_venda", "sum"),
+    valor_liquido = ("valor_liquido", "sum"),
+    quantidade_vendas = ("valor_venda", "size")
+)
+
+faturamento_faixa_etaria = dados.groupby("faixa_etaria").agg(
+    valor_venda = ("valor_venda", "sum"),
+    valor_liquido = ("valor_liquido", "sum"),
+    quantidade_vendas = ("valor_venda", "size")
+)
+
 print(f"""
     Receita total de vendas: R$ {total_vendas_bruto}
     Receita total de vendas sem impostos: R$ {total_vendas_liquido}
@@ -76,4 +94,6 @@ print(f"""
     Maior venda: R$ {maximo}
 """)
 
-print(clientes_unicos)
+print(faturamento_vendedor)
+print(faturamento_categoria)
+print(faturamento_faixa_etaria)
